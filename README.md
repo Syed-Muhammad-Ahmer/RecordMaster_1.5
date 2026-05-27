@@ -29,18 +29,21 @@
 
    </div>
 <div align="center">
- <a href="https://github.com/PranshulGG/RecordMaster/releases"><img alt="GitHub" src="https://user-images.githubusercontent.com/69304392/148696068-0cfea65d-b18f-4685-82b5-329a330b1c0d.png" height="80"/></a>
+ <a href="https://github.com/Syed-Muhammad-Ahmer/RecordMaster_1.5/releases"><img alt="GitHub" src="https://user-images.githubusercontent.com/69304392/148696068-0cfea65d-b18f-4685-82b5-329a330b1c0d.png" height="80"/></a>
    </div>
 <br>
 
 # 👁️ Screenshots
 
 <div align="center">
-<img src="prev/prev_1.png"  width="250">
-<img src="prev/prev_2.png"  width="250">
-<img src="prev/prev_3.png"  width="250">
-### New changes:   
-  <p align="center">
+  <img src="prev/prev_1.png" width="250">
+  <img src="prev/prev_2.png" width="250">
+  <img src="prev/prev_3.png" width="250">
+</div>
+
+## New Changes
+
+<p align="center">
   <img src="https://github.com/user-attachments/assets/31981b4f-8194-4348-90d1-71f25be62c1c" width="250"/>
   <img src="https://github.com/user-attachments/assets/2fadc12d-e303-4072-b327-ac69923087a2" width="250"/>
 </p>
