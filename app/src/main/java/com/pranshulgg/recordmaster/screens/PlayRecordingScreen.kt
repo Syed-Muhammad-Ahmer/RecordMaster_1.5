@@ -46,8 +46,10 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.LinkedHashMap
 import java.util.Locale
 import java.util.concurrent.TimeUnit
+import kotlin.random.Random
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -82,11 +84,19 @@ fun PlayRecordingScreen(filePath: String, onDone: () -> Unit, navController: Nav
 
     LaunchedEffect(filePath) {
         isComputing = true
+        val cacheKey = file.absolutePath
+        val cachedPeaks = PeaksCache.get(cacheKey)
+        if (cachedPeaks != null) {
+            staticAmpsState.value = cachedPeaks
+        } else {
+            staticAmpsState.value = placeholderPeaks(requestedBarCount, cacheKey.hashCode())
+        }
         try {
             val amps = withContext(Dispatchers.IO) {
                 computePeaksFromAudioFile(file.absolutePath, requestedBarCount)
             }
             staticAmpsState.value = amps
+            PeaksCache.put(cacheKey, amps)
 
             try {
                 withContext(Dispatchers.IO) {
@@ -226,7 +236,7 @@ fun PlayRecordingScreen(filePath: String, onDone: () -> Unit, navController: Nav
                     isUserSeeking = isUserSeeking
                 )
 
-                if (isComputing) {
+                if (isComputing && staticAmpsState.value == null) {
                     Surface(
                         color = MaterialTheme.colorScheme.surfaceContainer,
                         modifier = Modifier.matchParentSize(),
@@ -446,6 +456,34 @@ private fun formatMs(ms: Int): String {
     val minutes = TimeUnit.MILLISECONDS.toMinutes(ms.toLong())
     val seconds = TimeUnit.MILLISECONDS.toSeconds(ms.toLong()) - TimeUnit.MINUTES.toSeconds(minutes)
     return String.format("%02d:%02d", minutes, seconds)
+}
+
+private object PeaksCache {
+    private const val MAX_ENTRIES = 24
+    private val cache = LinkedHashMap<String, FloatArray>(MAX_ENTRIES, 0.75f, true)
+
+    fun get(key: String): FloatArray? = cache[key]
+
+    fun put(key: String, value: FloatArray) {
+        cache[key] = value
+        if (cache.size > MAX_ENTRIES) {
+            val eldestKey = cache.entries.iterator().next().key
+            cache.remove(eldestKey)
+        }
+    }
+}
+
+private fun placeholderPeaks(count: Int, seed: Int): FloatArray {
+    val random = Random(seed)
+    val raw = FloatArray(count) { 0.25f + random.nextFloat() * 0.7f }
+    val smoothed = FloatArray(count)
+    for (i in 0 until count) {
+        val prev = raw[max(0, i - 1)]
+        val curr = raw[i]
+        val next = raw[min(count - 1, i + 1)]
+        smoothed[i] = (prev + curr + next) / 3f
+    }
+    return smoothed
 }
 
 suspend fun computePeaksFromAudioFile(path: String, barCount: Int): FloatArray = withContext(Dispatchers.IO) {

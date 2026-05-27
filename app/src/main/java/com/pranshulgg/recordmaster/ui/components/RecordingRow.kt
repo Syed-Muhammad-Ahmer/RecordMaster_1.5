@@ -516,6 +516,15 @@ fun RecordingRow(
                                     )
                                 }
                             )
+                            ListItem(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .background(MaterialTheme.colorScheme.surfaceContainerLowest),
+                                overlineContent = { Text("Size", fontSize = 11.sp) },
+                                headlineContent = {
+                                    Text(formatFileSize(file.length()), fontSize = 12.sp)
+                                }
+                            )
                         }
                     },
                     confirmButton = {
@@ -528,5 +537,6 @@ fun RecordingRow(
         }
     }
 }
+
 
 
