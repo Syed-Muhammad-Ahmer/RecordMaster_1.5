@@ -3,7 +3,7 @@
 </div>
 
 <h1 align="center">
-   RecordMaster
+   RecordMaster V1.5
 </h1>
 
 <div align="center">
