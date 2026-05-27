@@ -238,6 +238,18 @@ fun PlayRecordingScreen(filePath: String, onDone: () -> Unit, navController: Nav
                 }
             }
 
+            val seekBy: (Int) -> Unit = seekBy@{ deltaMs ->
+                val mp = player.value
+                val total = if (duration > 0) duration else mp?.duration ?: 0
+                if (total <= 0) return@seekBy
+                val base = mp?.currentPosition ?: currentPos
+                val target = (base + deltaMs).coerceIn(0, total)
+                try { mp?.seekTo(target) } catch (_: Exception) {}
+                currentPos = target
+                uiProgress = target / total.toFloat()
+                isUserSeeking = false
+            }
+
             val interactionSource = remember { MutableInteractionSource() }
             Spacer(Modifier.height(24.dp))
             Column(
@@ -309,7 +321,7 @@ fun PlayRecordingScreen(filePath: String, onDone: () -> Unit, navController: Nav
                             ),
                             shapes = ButtonDefaults.shapes(),
                             onClick = {
-
+                                seekBy(-5000)
                             }
 
                         ) {
@@ -406,7 +418,7 @@ fun PlayRecordingScreen(filePath: String, onDone: () -> Unit, navController: Nav
                             ),
                             shapes = ButtonDefaults.shapes(),
                             onClick = {
-                                player.value?.seekTo(10)
+                                seekBy(10000)
                             }
 
                         ) {
