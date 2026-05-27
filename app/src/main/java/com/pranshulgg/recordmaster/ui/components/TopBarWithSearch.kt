@@ -25,6 +25,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBarScrollBehavior
 import com.pranshulgg.recordmaster.R
 import kotlinx.coroutines.launch
+import androidx.compose.animation.*
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
+import androidx.compose.animation.core.tween
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -46,6 +53,16 @@ fun TopBarWithSearch(
     onCloseSelection: () -> Unit,
     selectedCount: String
 ) {
+    val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    LaunchedEffect(showSearch) {
+        if (showSearch) {
+            focusRequester.requestFocus()
+            keyboardController?.show()
+        }
+    }
+
     TopAppBar(
         scrollBehavior = scrollBehavior,
         colors = TopAppBarDefaults.topAppBarColors(
@@ -58,7 +75,10 @@ fun TopBarWithSearch(
                 if (!showSearch) {
                     IconButton(
                         onClick = { onToggleSearch() },
-                        shapes = IconButtonDefaults.shapes()
+                        shapes = IconButtonDefaults.shapes(),
+                        modifier = Modifier.animateContentSize(
+                            animationSpec = tween(300)
+                        )
                     ) {
                         Symbol(
                             R.drawable.search_24px,
@@ -68,7 +88,10 @@ fun TopBarWithSearch(
                 } else {
                     IconButton(
                         onClick = { clearSearchQuery() },
-                        shapes = IconButtonDefaults.shapes()
+                        shapes = IconButtonDefaults.shapes(),
+                        modifier = Modifier.animateContentSize(
+                            animationSpec = tween(300)
+                        )
                     ) {
                         Symbol(
                             R.drawable.close_24px,
@@ -82,7 +105,10 @@ fun TopBarWithSearch(
             if (currentTab != "home" && currentTab != "garbage") {
                 IconButton(onClick = {
                     onRequestDeleteFolder(selectedFolderName)
-                }, shapes = IconButtonDefaults.shapes()) {
+                }, shapes = IconButtonDefaults.shapes(),
+                modifier = Modifier.animateContentSize(
+                    animationSpec = tween(300)
+                )) {
                     Symbol(
                         R.drawable.delete_24px,
                         color = MaterialTheme.colorScheme.onSurface
@@ -94,7 +120,10 @@ fun TopBarWithSearch(
             if(isSelecting){
                 IconButton(onClick = {
                     onDeleteSelected()
-                }, shapes = IconButtonDefaults.shapes()) {
+                }, shapes = IconButtonDefaults.shapes(),
+                modifier = Modifier.animateContentSize(
+                    animationSpec = tween(300)
+                )) {
                     Symbol(
                         R.drawable.delete_24px,
                         color = MaterialTheme.colorScheme.onSurface
@@ -102,7 +131,10 @@ fun TopBarWithSearch(
                 }
                 IconButton(onClick = {
                     onShareSelected()
-                }, shapes = IconButtonDefaults.shapes()) {
+                }, shapes = IconButtonDefaults.shapes(),
+                modifier = Modifier.animateContentSize(
+                    animationSpec = tween(300)
+                )) {
                     Symbol(
                         R.drawable.share_24px,
                         color = MaterialTheme.colorScheme.onSurface
@@ -111,48 +143,69 @@ fun TopBarWithSearch(
             }
         },
         title = {
-            if (showSearch) {
-                BasicTextField(
-                    value = searchQuery,
-                    onValueChange =  onSearchChange ,
-                    textStyle = TextStyle(
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontSize = 17.sp
-                    ),
-                    modifier = Modifier
-                        .height(56.dp).fillMaxWidth(),
+            AnimatedContent(
+                targetState = showSearch,
+                transitionSpec = {
+                    (fadeIn(animationSpec = tween(300)) + slideInHorizontally(
+                        initialOffsetX = { -it },
+                        animationSpec = tween(300)
+                    )).togetherWith(
+                        fadeOut(animationSpec = tween(300)) + slideOutHorizontally(
+                            targetOffsetX = { it },
+                            animationSpec = tween(300)
+                        )
+                    )
+                },
+                label = "search_title_transition"
+            ) { isSearching ->
+                if (isSearching) {
+                    BasicTextField(
+                        value = searchQuery,
+                        onValueChange =  onSearchChange ,
+                        textStyle = TextStyle(
+                            color = MaterialTheme.colorScheme.onSurface,
+                            fontSize = 17.sp
+                        ),
+                        modifier = Modifier
+                            .height(56.dp)
+                            .fillMaxWidth()
+                            .focusRequester(focusRequester),
 
-                    singleLine = true,
-                    cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                    decorationBox = { innerTextField ->
+                        singleLine = true,
+                        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                        decorationBox = { innerTextField ->
 
-                        Box(
-                            contentAlignment = Alignment.CenterStart,
-                        ) {
-                            if (searchQuery.isEmpty()) {
-                                Text(
-                                    text = "Search...",
-                                    fontSize = 17.sp,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
+                            Box(
+                                contentAlignment = Alignment.CenterStart,
+                            ) {
+                                if (searchQuery.isEmpty()) {
+                                    Text(
+                                        text = "Search...",
+                                        fontSize = 17.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                innerTextField()
                             }
-                            innerTextField()
                         }
+                    )
+                } else{
+                    val titleText = when (currentTab) {
+                        "home" -> "Recordings"
+                        "garbage" -> "Recently deleted"
+                        "folder" -> selectedFolderName ?: "Folder"
+                        else -> "Recordings"
                     }
-                )
-            } else{
-                val titleText = when (currentTab) {
-                    "home" -> "Recordings"
-                    "garbage" -> "Recently deleted"
-                    "folder" -> selectedFolderName ?: "Folder"
-                    else -> "Recordings"
+                    Text(if(isSelecting) "$selectedCount selected" else titleText, fontSize = 20.sp)
                 }
-                Text(if(isSelecting) "$selectedCount selected" else titleText, fontSize = 20.sp)
             }
         },
         navigationIcon = {
             if(!showSearch && !isSelecting) {
-                IconButton(onClick = { openDrawer() }, shapes = IconButtonDefaults.shapes()) {
+                IconButton(onClick = { openDrawer() }, shapes = IconButtonDefaults.shapes(),
+                modifier = Modifier.animateContentSize(
+                    animationSpec = tween(300)
+                )) {
                     Symbol(R.drawable.menu_24px,  color = MaterialTheme.colorScheme.onSurface)
                 }
             } else{
@@ -162,7 +215,10 @@ fun TopBarWithSearch(
                     } else{
                         onCloseSelection()
                     }
-                }, shapes = IconButtonDefaults.shapes()) {
+                }, shapes = IconButtonDefaults.shapes(),
+                modifier = Modifier.animateContentSize(
+                    animationSpec = tween(300)
+                )) {
                     Symbol(R.drawable.arrow_back_24px,  color = MaterialTheme.colorScheme.onSurface)
                 }
             }

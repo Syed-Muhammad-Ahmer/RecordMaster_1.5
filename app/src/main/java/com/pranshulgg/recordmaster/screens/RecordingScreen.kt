@@ -94,7 +94,7 @@ fun RecordingScreen(onDone: () -> Unit) {
                         amplitudes.clear()
                         repeat(maxSamples) { amplitudes.add(0f) }
                     } else coroutineScope.launch { snackbarHostState.showSnackbar("Could not start recorder") }
-                }, namePrefix = "User")
+                }, namePrefix = "Rec")
             } else {
                 coroutineScope.launch {
                     snackbarHostState.showSnackbar("Mic permission is required to record")
@@ -295,7 +295,7 @@ fun RecordingScreen(onDone: () -> Unit) {
                                                                 snackbarHostState.showSnackbar("Could not start recorder")
                                                             }
                                                         },
-                                                        namePrefix = "User"
+                                                        namePrefix = "Rec"
                                                     )
                                                 } else {
                                                     permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
@@ -307,11 +307,6 @@ fun RecordingScreen(onDone: () -> Unit) {
                                                     try {
                                                         recorderRef.value?.pause()
                                                         isPaused = true
-                                                        coroutineScope.launch {
-                                                            snackbarHostState.showSnackbar(
-                                                                "Paused"
-                                                            )
-                                                        }
                                                     } catch (e: Exception) {
                                                         Log.w("RecordingScreen", "pause failed", e)
                                                         coroutineScope.launch {
@@ -334,11 +329,6 @@ fun RecordingScreen(onDone: () -> Unit) {
                                                     try {
                                                         recorderRef.value?.resume()
                                                         isPaused = false
-                                                        coroutineScope.launch {
-                                                            snackbarHostState.showSnackbar(
-                                                                "Resumed"
-                                                            )
-                                                        }
                                                     } catch (e: Exception) {
                                                         Log.w("RecordingScreen", "resume failed", e)
                                                         coroutineScope.launch {
@@ -395,7 +385,10 @@ fun RecordingScreen(onDone: () -> Unit) {
                                         amplitudes.clear()
                                         elapsedSeconds = 0L
                                         coroutineScope.launch {
-                                            if (path != null) snackbarHostState.showSnackbar("Saved: $path")
+                                            if (path != null) {
+                                                val fileName = File(path).name
+                                                snackbarHostState.showSnackbar("Saved: $fileName")
+                                            }
                                             else snackbarHostState.showSnackbar("Save failed")
                                         }
                                     }

@@ -114,6 +114,8 @@ fun RecordingRow(
     var showRenameDialog by remember { mutableStateOf(false) }
     var renameText by rememberSaveable { mutableStateOf(file.name) }
 
+    var showInfoDialog by remember { mutableStateOf(false) }
+
     var showMoveDialog by remember { mutableStateOf(false) }
     var availableFolders by remember { mutableStateOf(listOf<File>()) }
 
@@ -364,6 +366,14 @@ fun RecordingRow(
                                         hideSheet()
                                     }
                                 ),
+                                SettingTile.ActionTile(
+                                    leading = {SettingsTileIcon(R.drawable.info_24px)},
+                                    title = "Info",
+                                    onClick = {
+                                        showInfoDialog = true
+                                        hideSheet()
+                                    }
+                                ),
                             )
                         }
                     )
@@ -467,6 +477,51 @@ fun RecordingRow(
                     },
                     dismissButton = {
                         TextButton(onClick = { showRenameDialog = false }, shapes = ButtonDefaults.shapes()) { Text("Cancel", fontWeight = FontWeight.W600, fontSize = 16.sp) }
+                    }
+                )
+            }
+
+            if (showInfoDialog) {
+                AlertDialog(
+                    onDismissRequest = { showInfoDialog = false },
+                    icon = {
+                        Symbol(R.drawable.info_24px, color = MaterialTheme.colorScheme.primary)
+                    },
+                    title = { Text("Recording info") },
+                    text = {
+                        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            ListItem(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .background(MaterialTheme.colorScheme.surfaceContainerLowest),
+                                overlineContent = { Text("Name", fontSize = 11.sp) },
+                                headlineContent = { Text(file.nameWithoutExtension, fontSize = 14.sp) }
+                            )
+                            ListItem(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .background(MaterialTheme.colorScheme.surfaceContainerLowest),
+                                overlineContent = { Text("Date", fontSize = 11.sp) },
+                                headlineContent = { Text("$date at $time", fontSize = 14.sp) }
+                            )
+                            ListItem(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .background(MaterialTheme.colorScheme.surfaceContainerLowest),
+                                overlineContent = { Text("Location", fontSize = 11.sp) },
+                                headlineContent = {
+                                    Text(
+                                        text = file.parentFile?.absolutePath ?: "Unknown",
+                                        fontSize = 12.sp
+                                    )
+                                }
+                            )
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(onClick = { showInfoDialog = false }, shapes = ButtonDefaults.shapes()) {
+                            Text("Close", fontWeight = FontWeight.W600, fontSize = 16.sp)
+                        }
                     }
                 )
             }
