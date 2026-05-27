@@ -69,7 +69,11 @@ fun SettingsPage(
     var pickedColor = PreferencesHelper.getString("seedColor") ?: "0xff0000FF"
     var currentTheme by remember {
         mutableStateOf(
+<<<<<<< HEAD
             PreferencesHelper.getString("AppTheme") ?: "Dark"
+=======
+            PreferencesHelper.getString("AppTheme") ?: "Light"
+>>>>>>> e3e3d76af75a19e16cece744fb352509b1892c05
         )
     }
 

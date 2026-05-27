@@ -86,7 +86,11 @@ class MainActivity : ComponentActivity() {
 
             var darkTheme by remember {
                 mutableStateOf(
+<<<<<<< HEAD
                     PreferencesHelper.getBool("dark_theme") ?: true
+=======
+                    PreferencesHelper.getBool("dark_theme") ?: false
+>>>>>>> e3e3d76af75a19e16cece744fb352509b1892c05
                 )
             }
             var colorSeed by remember {

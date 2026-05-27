@@ -20,7 +20,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+<<<<<<< HEAD
 import androidx.compose.runtime.withFrameNanos
+=======
+>>>>>>> e3e3d76af75a19e16cece744fb352509b1892c05
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,8 +40,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import androidx.navigation.NavController
+<<<<<<< HEAD
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
+=======
+>>>>>>> e3e3d76af75a19e16cece744fb352509b1892c05
 import com.pranshulgg.recordmaster.R
 import com.pranshulgg.recordmaster.ui.components.DropdownMenu
 import com.pranshulgg.recordmaster.ui.components.Symbol
@@ -47,6 +53,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+<<<<<<< HEAD
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.DataInputStream
@@ -56,10 +63,23 @@ import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.math.exp
+=======
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.LinkedHashMap
+import java.util.Locale
+import java.util.concurrent.TimeUnit
+import kotlin.random.Random
+import kotlin.math.abs
+>>>>>>> e3e3d76af75a19e16cece744fb352509b1892c05
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
+<<<<<<< HEAD
+=======
+import kotlin.system.measureNanoTime
+>>>>>>> e3e3d76af75a19e16cece744fb352509b1892c05
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -82,15 +102,19 @@ fun PlayRecordingScreen(filePath: String, onDone: () -> Unit, navController: Nav
 
     val requestedBarCount = 140
     val maxVisibleBars = 120
+<<<<<<< HEAD
     val waveformCacheFile = remember(filePath) {
         File(context.cacheDir, "waveform_${file.nameWithoutExtension}_${file.lastModified()}_${requestedBarCount}.bin")
     }
+=======
+>>>>>>> e3e3d76af75a19e16cece744fb352509b1892c05
 
     val staticAmpsState = remember { mutableStateOf<FloatArray?>(null) }
     var isComputing by remember { mutableStateOf(false) }
 
     LaunchedEffect(filePath) {
         isComputing = true
+<<<<<<< HEAD
         try {
             val cached = withContext(Dispatchers.IO) {
                 readWaveformCache(waveformCacheFile, requestedBarCount)
@@ -106,6 +130,21 @@ fun PlayRecordingScreen(filePath: String, onDone: () -> Unit, navController: Nav
                     writeWaveformCache(waveformCacheFile, amps)
                 }
             }
+=======
+        val cacheKey = file.absolutePath
+        val cachedPeaks = PeaksCache.get(cacheKey)
+        if (cachedPeaks != null) {
+            staticAmpsState.value = cachedPeaks
+        } else {
+            staticAmpsState.value = placeholderPeaks(requestedBarCount, cacheKey.hashCode())
+        }
+        try {
+            val amps = withContext(Dispatchers.IO) {
+                computePeaksFromAudioFile(file.absolutePath, requestedBarCount)
+            }
+            staticAmpsState.value = amps
+            PeaksCache.put(cacheKey, amps)
+>>>>>>> e3e3d76af75a19e16cece744fb352509b1892c05
 
             try {
                 withContext(Dispatchers.IO) {
@@ -128,7 +167,11 @@ fun PlayRecordingScreen(filePath: String, onDone: () -> Unit, navController: Nav
     LaunchedEffect(isPlaying, player.value) {
         while (isPlaying && player.value != null) {
             currentPos = player.value?.currentPosition ?: 0
+<<<<<<< HEAD
             delay(50)
+=======
+            delay(200)
+>>>>>>> e3e3d76af75a19e16cece744fb352509b1892c05
         }
     }
 
@@ -218,6 +261,7 @@ fun PlayRecordingScreen(filePath: String, onDone: () -> Unit, navController: Nav
 
             var uiProgress by remember { mutableStateOf(0f) }
             var isUserSeeking by remember { mutableStateOf(false) }
+<<<<<<< HEAD
             fun seekToMs(targetMs: Int) {
                 val clamped = targetMs.coerceIn(0, duration)
                 try { player.value?.seekTo(clamped) } catch (_: Exception) {}
@@ -227,6 +271,8 @@ fun PlayRecordingScreen(filePath: String, onDone: () -> Unit, navController: Nav
             fun seekBy(deltaMs: Int) {
                 seekToMs(currentPos + deltaMs)
             }
+=======
+>>>>>>> e3e3d76af75a19e16cece744fb352509b1892c05
 
 
                 Box(
@@ -255,6 +301,7 @@ fun PlayRecordingScreen(filePath: String, onDone: () -> Unit, navController: Nav
                 )
 
                 if (isComputing && staticAmpsState.value == null) {
+<<<<<<< HEAD
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -265,10 +312,34 @@ fun PlayRecordingScreen(filePath: String, onDone: () -> Unit, navController: Nav
                             modifier = Modifier.fillMaxWidth(),
                             color = MaterialTheme.colorScheme.primary
                         )
+=======
+                    Surface(
+                        color = MaterialTheme.colorScheme.surfaceContainer,
+                        modifier = Modifier.matchParentSize(),
+                    ) {
+                        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                            LoadingIndicator()
+                        }
+>>>>>>> e3e3d76af75a19e16cece744fb352509b1892c05
                     }
                 }
             }
 
+<<<<<<< HEAD
+=======
+            val seekBy: (Int) -> Unit = seekBy@{ deltaMs ->
+                val mp = player.value
+                val total = if (duration > 0) duration else mp?.duration ?: 0
+                if (total <= 0) return@seekBy
+                val base = mp?.currentPosition ?: currentPos
+                val target = (base + deltaMs).coerceIn(0, total)
+                try { mp?.seekTo(target) } catch (_: Exception) {}
+                currentPos = target
+                uiProgress = target / total.toFloat()
+                isUserSeeking = false
+            }
+
+>>>>>>> e3e3d76af75a19e16cece744fb352509b1892c05
             val interactionSource = remember { MutableInteractionSource() }
             Spacer(Modifier.height(24.dp))
             Column(
@@ -340,7 +411,11 @@ fun PlayRecordingScreen(filePath: String, onDone: () -> Unit, navController: Nav
                             ),
                             shapes = ButtonDefaults.shapes(),
                             onClick = {
+<<<<<<< HEAD
                                 seekBy(-5_000)
+=======
+                                seekBy(-5000)
+>>>>>>> e3e3d76af75a19e16cece744fb352509b1892c05
                             }
 
                         ) {
@@ -377,9 +452,12 @@ fun PlayRecordingScreen(filePath: String, onDone: () -> Unit, navController: Nav
                                                 setOnPreparedListener { p ->
                                                     duration = p.duration
                                                     player.value = p
+<<<<<<< HEAD
                                                     if (currentPos > 0) {
                                                         try { p.seekTo(currentPos) } catch (_: Exception) {}
                                                     }
+=======
+>>>>>>> e3e3d76af75a19e16cece744fb352509b1892c05
                                                     p.start()
                                                     isPlaying = true
                                                 }
@@ -440,7 +518,11 @@ fun PlayRecordingScreen(filePath: String, onDone: () -> Unit, navController: Nav
                             ),
                             shapes = ButtonDefaults.shapes(),
                             onClick = {
+<<<<<<< HEAD
                                 seekBy(10_000)
+=======
+                                seekBy(10000)
+>>>>>>> e3e3d76af75a19e16cece744fb352509b1892c05
                             }
 
                         ) {
@@ -470,6 +552,7 @@ private fun formatMs(ms: Int): String {
     return String.format("%02d:%02d", minutes, seconds)
 }
 
+<<<<<<< HEAD
 private fun readWaveformCache(cacheFile: File, expectedSize: Int): FloatArray? {
     return try {
         if (!cacheFile.exists()) return null
@@ -493,6 +576,34 @@ private fun writeWaveformCache(cacheFile: File, amps: FloatArray) {
         }
     } catch (_: Exception) {
     }
+=======
+private object PeaksCache {
+    private const val MAX_ENTRIES = 24
+    private val cache = LinkedHashMap<String, FloatArray>(MAX_ENTRIES, 0.75f, true)
+
+    fun get(key: String): FloatArray? = cache[key]
+
+    fun put(key: String, value: FloatArray) {
+        cache[key] = value
+        if (cache.size > MAX_ENTRIES) {
+            val eldestKey = cache.entries.iterator().next().key
+            cache.remove(eldestKey)
+        }
+    }
+}
+
+private fun placeholderPeaks(count: Int, seed: Int): FloatArray {
+    val random = Random(seed)
+    val raw = FloatArray(count) { 0.25f + random.nextFloat() * 0.7f }
+    val smoothed = FloatArray(count)
+    for (i in 0 until count) {
+        val prev = raw[max(0, i - 1)]
+        val curr = raw[i]
+        val next = raw[min(count - 1, i + 1)]
+        smoothed[i] = (prev + curr + next) / 3f
+    }
+    return smoothed
+>>>>>>> e3e3d76af75a19e16cece744fb352509b1892c05
 }
 
 suspend fun computePeaksFromAudioFile(path: String, barCount: Int): FloatArray = withContext(Dispatchers.IO) {
@@ -737,6 +848,7 @@ private fun WaveformBars(
     }
 
     LaunchedEffect(barCount) {
+<<<<<<< HEAD
         val attackSpeed = 12f
         val decaySpeed = 6f
         var lastFrameNs = 0L
@@ -758,6 +870,21 @@ private fun WaveformBars(
                 val next = cur + (tgt - cur) * coeff
                 displayAmps[i] = if (next < 0.0005f) 0f else next
             }
+=======
+        val attack = 0.60f
+        val decay = 0.12f
+        val frameDelay = 33L
+
+        while (true) {
+            for (i in 0 until barCount) {
+                val cur = displayAmps.getOrNull(i) ?: 0f
+                val tgt = targetAmps.getOrNull(i) ?: 0f
+                val coeff = if (tgt > cur) attack else decay
+                val next = cur + (tgt - cur) * coeff
+                displayAmps[i] = if (next < 0.0005f) 0f else next
+            }
+            delay(frameDelay)
+>>>>>>> e3e3d76af75a19e16cece744fb352509b1892c05
         }
     }
 
@@ -826,10 +953,14 @@ private fun WaveformBars(
             val targetScroll = (clamped * totalWidthPx).coerceIn(0f, totalWidthPx)
             if (!scrollState.isScrollInProgress) {
                 try {
+<<<<<<< HEAD
                     scrollState.animateScrollTo(
                         targetScroll.roundToInt(),
                         animationSpec = tween(durationMillis = 120, easing = LinearOutSlowInEasing)
                     )
+=======
+                    scrollState.animateScrollTo(targetScroll.roundToInt())
+>>>>>>> e3e3d76af75a19e16cece744fb352509b1892c05
                 } catch (_: Exception) {}
             }
         }
