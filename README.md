@@ -1,20 +1,24 @@
 <div align="center">
    <img src="prev/main_app_icon.png" alt="" width="150px">
 </div>
+
 <h1 align="center">
- RecordMaster
+   RecordMaster
 </h1>
-   <div  align="center">
-      <img src="https://img.shields.io/github/license/PranshulGG/RecordMaster?style=for-the-badge&color=cba6f7&labelColor=302D41">
-      <img src="https://img.shields.io/github/last-commit/PranshulGG/RecordMaster?style=for-the-badge&color=b1d18a&labelColor=1f3701">
-      <br>
-      <img src="https://img.shields.io/github/release/PranshulGG/RecordMaster?style=for-the-badge&color=dbc66e&labelColor=3a3000">
-      <br>
-      <br>
 
-</a>
-   </div>
+<div align="center">
 
+<img src="https://img.shields.io/github/license/Syed-Muhammad-Ahmer/RecordMaster_1.5?style=for-the-badge&color=cba6f7&labelColor=302D41">
+
+<img src="https://img.shields.io/github/last-commit/Syed-Muhammad-Ahmer/RecordMaster_1.5?style=for-the-badge&color=b1d18a&labelColor=1f3701">
+
+<br>
+
+<img src="https://img.shields.io/github/v/release/Syed-Muhammad-Ahmer/RecordMaster_1.5?style=for-the-badge&color=dbc66e&labelColor=3a3000">
+
+<br><br>
+
+</div>
  <div align="center">
 
 [Contact](https://github.com/PranshulGG/RecordMaster?tab=readme-ov-file#contact) • [License](https://github.com/PranshulGG/RecordMaster?tab=readme-ov-file#license)
@@ -35,6 +39,11 @@
 <img src="prev/prev_1.png"  width="250">
 <img src="prev/prev_2.png"  width="250">
 <img src="prev/prev_3.png"  width="250">
+### New changes:   
+  <p align="center">
+  <img src="https://github.com/user-attachments/assets/31981b4f-8194-4348-90d1-71f25be62c1c" width="250"/>
+  <img src="https://github.com/user-attachments/assets/2fadc12d-e303-4072-b327-ac69923087a2" width="250"/>
+</p>
 
 </div>
 
@@ -50,7 +59,7 @@
 
 # ✉️ Contact
 
-For any questions or feedback, feel free to open an issue on GitHub or contact pranshul.devmain@gmail.com
+For any questions or feedback, feel free to open an issue on GitHub or contact pranshul.devmain@gmail.com or syedmuhammadahmernaqvi@gmail.com
 
 # ©️ License
 
